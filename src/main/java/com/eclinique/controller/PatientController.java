@@ -12,6 +12,8 @@ import com.eclinique.model.RendezVous;
 import java.time.LocalDateTime;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +40,11 @@ public class PatientController {
             return patientService.rechercher(recherche);
         }
         return patientService.findAll();
+    }
+
+    @GetMapping("/page")
+    public Page<Patient> page(@RequestParam(required = false) String recherche, Pageable pageable) {
+        return patientService.page(recherche, pageable);
     }
 
     @GetMapping("/{id}")

@@ -1,6 +1,8 @@
 package com.eclinique.repository;
 
 import com.eclinique.model.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,6 +13,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     Optional<Patient> findByEmail(String email);
 
     List<Patient> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom);
+    Page<Patient> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom, Pageable pageable);
 
     boolean existsByNumeroDossier(String numeroDossier);
     boolean existsByOrganismeId(Long organismeId);

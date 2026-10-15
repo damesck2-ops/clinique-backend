@@ -24,6 +24,10 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -57,6 +61,13 @@ public class PatientService {
             .sorted(Comparator.comparing(Patient::getDateCreation,
                 Comparator.nullsLast(Comparator.reverseOrder())))
             .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Patient> page(String recherche, Pageable pageable) {
+        Pageable tri = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "dateCreation"));
+        if (recherche == null || recherche.isBlank()) return patientRepository.findAll(tri);
+        return patientRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(recherche, recherche, tri);
     }
 
     public Patient findById(Long id) {

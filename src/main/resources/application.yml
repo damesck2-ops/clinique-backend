@@ -31,6 +31,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        # Charge les associations paresseuses par lots (une requête IN au lieu d'une par ligne)
+        default_batch_fetch_size: 50
         jdbc:
           time_zone: UTC
 

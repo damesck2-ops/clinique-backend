@@ -11,6 +11,11 @@ import com.eclinique.repository.FactureRepository;
 import com.eclinique.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Year;
@@ -29,6 +34,13 @@ public class FactureService {
     private final PatientRepository patientRepository;
     private final ConsultationRepository consultationRepository;
     private final NotificationService notificationService;
+
+    @Transactional(readOnly = true)
+    public Page<Facture> page(Pageable pageable) {
+        Page<Facture> page = factureRepository.findAllBy(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "dateFacture")));
+        page.forEach(f -> Hibernate.initialize(f.getLignes()));
+        return page;
+    }
 
     public List<Facture> findAll() {
         return factureRepository.findAll().stream()

@@ -33,14 +33,12 @@ public class DashboardController {
         LocalDateTime finJour = LocalDate.now().plusDays(1).atStartOfDay();
 
         stats.put("totalPatients", patientRepository.count());
-        stats.put("rendezVousAujourdhui", rendezVousRepository.findByDateHeureBetween(debutJour, finJour).size());
-        stats.put("rendezVousPlanifies", rendezVousRepository.findByStatut(StatutRendezVous.PLANIFIE).size());
-        stats.put("facturesEnAttente", factureRepository.findByStatut(StatutFacture.EN_ATTENTE).size());
-        stats.put("medicamentsEnAlerte", medicamentRepository.findMedicamentsEnAlerte().size());
+        stats.put("rendezVousAujourdhui", rendezVousRepository.countByDateHeureBetween(debutJour, finJour));
+        stats.put("rendezVousPlanifies", rendezVousRepository.countByStatut(StatutRendezVous.PLANIFIE));
+        stats.put("facturesEnAttente", factureRepository.countByStatut(StatutFacture.EN_ATTENTE));
+        stats.put("medicamentsEnAlerte", medicamentRepository.countMedicamentsEnAlerte());
 
-        double chiffreAffaires = factureRepository.findByStatut(StatutFacture.PAYEE).stream()
-                .mapToDouble(f -> f.getMontantTotal() == null ? 0 : f.getMontantTotal())
-                .sum();
+        double chiffreAffaires = valeur(factureRepository.sumByStatut(StatutFacture.PAYEE));
         double encaissements = valeur(encaissementRepository.sumTotal());
         // CA encaissé = factures payées + montants perçus à l'accueil (consultations / rendez-vous)
         stats.put("chiffreAffaires", chiffreAffaires + encaissements);

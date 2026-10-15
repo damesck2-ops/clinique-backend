@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -55,8 +57,14 @@ public class ComptabiliteController {
     @GetMapping("/encaissements")
     public List<EncaissementResponse> encaissements() { return encaissementService.findAll(); }
 
+    @GetMapping("/encaissements/page")
+    public Page<EncaissementResponse> encaissementsPage(Pageable pageable) { return encaissementService.page(pageable); }
+
     @GetMapping("/paiements")
     public List<PaiementEmployeResponse> paiements() { return service.paiements(); }
+
+    @GetMapping("/paiements/page")
+    public Page<PaiementEmployeResponse> paiementsPage(Pageable pageable) { return service.paiementsPage(pageable); }
 
     @PostMapping("/paiements")
     public PaiementEmploye payer(@Valid @RequestBody PaiementEmployeRequest request,

@@ -3,6 +3,8 @@ package com.eclinique.repository;
 import com.eclinique.model.Facture;
 import com.eclinique.model.StatutFacture;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -50,6 +52,11 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
             java.time.LocalDateTime debut, java.time.LocalDateTime fin);
 
     Optional<Facture> findByNumeroFacture(String numeroFacture);
+    @EntityGraph(attributePaths = {"patient", "patient.organisme", "organisme"})
+    Page<Facture> findAllBy(Pageable pageable);
+    long countByStatut(StatutFacture statut);
+    @Query("select coalesce(sum(f.montantTotal), 0) from Facture f where f.statut = :statut")
+    Double sumByStatut(StatutFacture statut);
     @EntityGraph(attributePaths = {"patient", "patient.organisme", "organisme", "lignes"})
     List<Facture> findByPatientId(Long patientId);
     @EntityGraph(attributePaths = {"patient", "patient.organisme", "organisme", "lignes"})

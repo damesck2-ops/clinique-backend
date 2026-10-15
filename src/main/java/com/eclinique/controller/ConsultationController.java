@@ -5,6 +5,8 @@ import com.eclinique.model.Consultation;
 import com.eclinique.security.UtilisateurPrincipal;
 import com.eclinique.service.ConsultationService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +26,11 @@ public class ConsultationController {
     @GetMapping
     public List<Consultation> findAll() {
         return consultationService.findAll();
+    }
+
+    @GetMapping("/page")
+    public Page<Consultation> page(Pageable pageable) {
+        return consultationService.page(pageable);
     }
 
     @GetMapping("/patient/{patientId}")

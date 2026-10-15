@@ -2,6 +2,8 @@ package com.eclinique.repository;
 
 import com.eclinique.model.Encaissement;
 import com.eclinique.model.TypeEncaissement;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,6 +14,7 @@ public interface EncaissementRepository extends JpaRepository<Encaissement, Long
     boolean existsByOrganismeId(Long organismeId);
 
     List<Encaissement> findAllByOrderByDateEncaissementDesc();
+    Page<Encaissement> findAllBy(Pageable pageable);
 
     List<Encaissement> findByDateEncaissementGreaterThanEqualAndDateEncaissementLessThan(LocalDateTime debut, LocalDateTime fin);
 

@@ -16,6 +16,10 @@ import com.eclinique.repository.UtilisateurRepository;
 import com.eclinique.security.UtilisateurPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -115,11 +119,19 @@ public class ComptabiliteService {
 
     @Transactional(readOnly = true)
     public List<PaiementEmployeResponse> paiements() {
-        return paiementRepository.findAllByOrderByDatePaiementDesc().stream().map(p ->
-                new PaiementEmployeResponse(p.getId(), p.getEmploye().getId(),
-                        p.getEmploye().getPrenom() + " " + p.getEmploye().getNom(), p.getMontant(),
-                        p.getPeriode(), p.getMotif(), p.getDatePaiement(),
-                        p.getEffectuePar() == null ? null : p.getEffectuePar().getId())).toList();
+        return paiementRepository.findAllByOrderByDatePaiementDesc().stream().map(this::versReponse).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PaiementEmployeResponse> paiementsPage(Pageable pageable) {
+        return paiementRepository.findAllBy(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "datePaiement"))).map(this::versReponse);
+    }
+
+    private PaiementEmployeResponse versReponse(PaiementEmploye p) {
+        return new PaiementEmployeResponse(p.getId(), p.getEmploye().getId(),
+                p.getEmploye().getPrenom() + " " + p.getEmploye().getNom(), p.getMontant(),
+                p.getPeriode(), p.getMotif(), p.getDatePaiement(),
+                p.getEffectuePar() == null ? null : p.getEffectuePar().getId());
     }
 
     public PaiementEmploye payer(PaiementEmployeRequest request, UtilisateurPrincipal auteur) {

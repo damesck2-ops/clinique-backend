@@ -10,6 +10,10 @@ import com.eclinique.repository.RendezVousRepository;
 import com.eclinique.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -24,6 +28,11 @@ public class RendezVousService {
     private final RendezVousRepository rendezVousRepository;
     private final PatientRepository patientRepository;
     private final UtilisateurRepository utilisateurRepository;
+
+    @Transactional(readOnly = true)
+    public Page<RendezVous> page(Pageable pageable) {
+        return rendezVousRepository.findAllBy(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "dateHeure")));
+    }
 
     public List<RendezVous> findAll() {
         return rendezVousRepository.findAll().stream()

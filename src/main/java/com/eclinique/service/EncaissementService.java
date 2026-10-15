@@ -11,6 +11,10 @@ import com.eclinique.repository.UtilisateurRepository;
 import com.eclinique.security.UtilisateurPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -63,6 +67,11 @@ public class EncaissementService {
                 .enregistreParId(enregistrePar == null ? null : enregistrePar.getId())
                 .enregistreParNom(enregistrePar == null ? null : enregistrePar.getPrenom() + " " + enregistrePar.getNom())
                 .build());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<EncaissementResponse> page(Pageable pageable) {
+        return encaissementRepository.findAllBy(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "dateEncaissement"))).map(EncaissementResponse::of);
     }
 
     @Transactional(readOnly = true)

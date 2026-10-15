@@ -17,6 +17,10 @@ public interface MedicamentRepository extends JpaRepository<Medicament, Long> {
     List<Medicament> findMedicamentsEnAlerte();
 
     @org.springframework.data.jpa.repository.Query(
+        "SELECT count(m) FROM Medicament m WHERE m.quantiteStock <= m.seuilAlerte")
+    long countMedicamentsEnAlerte();
+
+    @org.springframework.data.jpa.repository.Query(
         "SELECT m FROM Medicament m WHERE m.dateExpiration IS NOT NULL AND m.dateExpiration <= :date")
     List<Medicament> findMedicamentsBientotPerimes(@org.springframework.data.repository.query.Param("date") java.time.LocalDate date);
 }

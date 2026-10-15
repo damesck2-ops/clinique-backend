@@ -12,10 +12,17 @@ import com.eclinique.repository.RendezVousRepository;
 import com.eclinique.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Gère le dossier médical (consultations) et déclenche automatiquement
@@ -35,6 +42,15 @@ public class ConsultationService {
 
     public List<Consultation> findAll() {
         return consultationRepository.findAllByOrderByDateConsultationDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Consultation> page(Pageable pageable) {
+        Page<Long> ids = consultationRepository.findPageIds(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "dateConsultation")));
+        Map<Long, Consultation> parId = new HashMap<>();
+        consultationRepository.findByIdIn(ids.getContent()).forEach(c -> parId.put(c.getId(), c));
+        return new PageImpl<>(ids.getContent().stream().map(parId::get).toList(), ids.getPageable(), ids.getTotalElements());
     }
 
     public List<Consultation> findByPatient(Long patientId) {

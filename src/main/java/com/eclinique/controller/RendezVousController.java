@@ -4,6 +4,8 @@ import com.eclinique.model.RendezVous;
 import com.eclinique.model.StatutRendezVous;
 import com.eclinique.service.RendezVousService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,11 @@ public class RendezVousController {
         if (patientId != null) return rendezVousService.findByPatient(patientId);
         if (medecinId != null) return rendezVousService.findByMedecin(medecinId);
         return rendezVousService.findAll();
+    }
+
+    @GetMapping("/page")
+    public Page<RendezVous> page(Pageable pageable) {
+        return rendezVousService.page(pageable);
     }
 
     @GetMapping("/{id}")
