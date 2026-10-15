@@ -21,6 +21,9 @@ spring:
       maximum-pool-size: ${DB_POOL_SIZE:5}
 
   jpa:
+    # Dialecte explicite : en cas d'échec de connexion, la vraie cause (hôte, mot de passe…)
+    # apparaît dans le log au lieu de « Unable to determine Dialect without JDBC metadata »
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.MySQLDialect}
     hibernate:
       ddl-auto: update
     show-sql: false
