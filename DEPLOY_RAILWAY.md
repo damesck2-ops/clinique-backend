@@ -1,4 +1,4 @@
-cd# Déploiement sur Railway (Backend + MySQL)
+# Déploiement sur Railway (Backend + MySQL)
 
 Le projet est prêt pour Railway : `Dockerfile`, `railway.json`, et `application.yml`
 qui lit automatiquement les variables du service MySQL de Railway.
@@ -8,12 +8,12 @@ qui lit automatiquement les variables du service MySQL de Railway.
 ```bash
 git add .
 git commit -m "Passage à MySQL + configuration Railway"
-git push origin master
+git push origin main
 ```
 
 ## 2. Créer le projet Railway
 
-1. Sur https://railway.com → **New Project** → **Deploy from GitHub repo** → choisir `e-clinique-backend`.
+1. Sur https://railway.com → **New Project** → **Deploy from GitHub repo** → choisir `damesck2-ops/clinique-backend` (branche `main`).
 2. Dans le même projet : **+ New** → **Database** → **Add MySQL**.
 
 ## 3. Relier le backend à MySQL
@@ -21,15 +21,22 @@ git push origin master
 Service backend → onglet **Variables** → **Raw Editor**, coller :
 
 ```
-MYSQLHOST=${{MySQL.MYSQLHOST}}
+MYSQLHOST=${{MySQL.RAILWAY_PRIVATE_DOMAIN}}
 MYSQLPORT=${{MySQL.MYSQLPORT}}
-MYSQLDATABASE=${{MySQL.MYSQLDATABASE}}
+MYSQLDATABASE=${{MySQL.MYSQL_DATABASE}}
 MYSQLUSER=${{MySQL.MYSQLUSER}}
-MYSQLPASSWORD=${{MySQL.MYSQLPASSWORD}}
+MYSQLPASSWORD=${{MySQL.MYSQL_ROOT_PASSWORD}}
+CORS_ALLOWED_ORIGINS=https://<domaine-du-frontend>.up.railway.app
 JWT_SECRET=remplacez-par-une-longue-chaine-aleatoire-de-64-caracteres-minimum
 ```
 
-(`MySQL` est le nom du service base de données ; adaptez-le s'il est différent.)
+(`MySQL` est le nom du service base de données ; adaptez-le s'il est différent.
+Toujours utiliser ces références plutôt que recopier les valeurs : l'adresse privée
+dépend du nom du service, par ex. `mysql-dsmj.railway.internal` et non `mysql.railway.internal`.)
+
+**Attention :** MySQL fixe le mot de passe root au premier démarrage, dans son volume.
+Modifier `MYSQL_ROOT_PASSWORD` ensuite provoque `Access denied for user 'root'` :
+il faut alors vider le volume du service MySQL (perte des données) pour le réinitialiser.
 
 Générer un secret JWT : `openssl rand -base64 64 | tr -d '\n'`
 
